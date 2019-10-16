@@ -1,12 +1,21 @@
 package com.java.xdd.activiti.config;
 
+import com.java.xdd.activiti.manager.CustomGroupEntityManager;
+import com.java.xdd.activiti.manager.CustomUserEntityManager;
+import com.java.xdd.activiti.service.CustomGroupEntityManagerFactory;
+import com.java.xdd.activiti.service.CustomUserEntityManagerFactory;
 import org.activiti.engine.*;
+import org.activiti.engine.impl.interceptor.SessionFactory;
 import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.spring.SpringProcessEngineConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author xdd
@@ -14,6 +23,12 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
  */
 @Configuration
 public class ActivitiConfig {
+
+    @Autowired
+    private CustomUserEntityManagerFactory userEntityManagerFactory;
+
+    @Autowired
+    private CustomGroupEntityManagerFactory groupEntityManagerFactory;
 
     @Bean
     public SpringProcessEngineConfiguration engineConfiguration() {
@@ -28,6 +43,8 @@ public class ActivitiConfig {
 
         engineConfiguration.setDataSource(dataSource());
         engineConfiguration.setTransactionManager(transactionManager());
+
+        engineConfiguration.setCustomSessionFactories(factoryList());//指定自定义用户管理工厂，包括：用户管理和组管理
 
         return engineConfiguration;
     }
@@ -94,6 +111,15 @@ public class ActivitiConfig {
         DataSourceTransactionManager transactionManager = new DataSourceTransactionManager();
         transactionManager.setDataSource(dataSource());
         return transactionManager;
+    }
+
+    //
+    @Bean
+    public List<SessionFactory> factoryList() {
+        List<SessionFactory> factoryList = new ArrayList<>();
+        factoryList.add(userEntityManagerFactory);
+        factoryList.add(groupEntityManagerFactory);
+        return factoryList;
     }
 
 }
