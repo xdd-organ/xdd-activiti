@@ -1,24 +1,29 @@
 package com.java.xdd.activiti.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.impl.persistence.entity.GroupEntity;
 import org.activiti.engine.impl.persistence.entity.GroupEntityManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 
 @Component
 public class CustomGroupEntityManager extends GroupEntityManager {
 
+    private Logger logger = LoggerFactory.getLogger(CustomGroupEntityManager.class);
+
     public boolean hasUser(String userId) {
         return true;
     }
     
     public List<Group> findGroupsByUser(String userId) {
-        System.out.println("CustomUserEntityManager  findGroupsByUser userId:" + userId);
+        logger.info("CustomUserEntityManager  findGroupsByUser userId:" + userId);
         if (userId == null)
             return null;
         boolean hasUser = hasUser(userId);
@@ -46,7 +51,6 @@ public class CustomGroupEntityManager extends GroupEntityManager {
     }
     
     public List<Map<String, Object>> getRoleList(String userId) {
-        return null;
 //      List<Map<String,Object>> roleList = new ArrayList<>();
 //      List<MisUserRole> misUserRoleList = misUserRoleDao.findByUserId(userId);
 //      for (MisUserRole misUserRole : misUserRoleList) {
@@ -62,5 +66,11 @@ public class CustomGroupEntityManager extends GroupEntityManager {
 //          roleList.add(roleMap);
 //      }
 //      return roleList;
+        List<Map<String,Object>> roleList = new ArrayList<>();
+        Map<String, Object> roleMap = new HashMap<>();
+        roleMap.put("roleCode", "role_code");
+        roleMap.put("roleName", "角色名称");
+        roleList.add(roleMap);
+        return roleList;
     }
 }

@@ -1,25 +1,27 @@
 package com.java.xdd.activiti.manager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.impl.persistence.entity.GroupEntity;
 import org.activiti.engine.impl.persistence.entity.UserEntity;
 import org.activiti.engine.impl.persistence.entity.UserEntityManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
-
-
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class CustomUserEntityManager extends UserEntityManager {
 
+    private Logger logger = LoggerFactory.getLogger(CustomUserEntityManager.class);
 
     public User findUserById(String userId) {
-        System.out.println("CustomUserEntityManager  findUserById userId:" + userId);
+        logger.info("CustomUserEntityManager  findUserById userId:" + userId);
         if (userId == null)
             return null;
         try {
@@ -44,11 +46,10 @@ public class CustomUserEntityManager extends UserEntityManager {
     }
     
     public List<Group> findGroupsByUser(String userId) {
-        System.out.println("CustomUserEntityManager  findGroupsByUser userId:" + userId);
-        if (userId == null)
-            return null;
+        logger.info("CustomUserEntityManager  findGroupsByUser userId:" + userId);
+        if (userId == null) return null;
         boolean hasUser = hasUser(userId);
-        if (!hasUser)return null;
+        if (!hasUser) return null;
         List<Map<String,Object>> roleList = getRoleList(userId);
         List<Group> groupEntitys = new ArrayList<Group>();
         if(null != roleList) {
@@ -72,19 +73,19 @@ public class CustomUserEntityManager extends UserEntityManager {
     }
     
     public String getUserName(String userId) {
-        return "";
+        return "admin";
     }
     
     public String getUserPassword(String userId) {
-        return "";
+        return "123456";
     }
     
     public String getUserEmail(String userId) {
-        return "";
+        return "123456@email.com";
     }
     
     public List<Map<String, Object>> getRoleList(String userId) {
-        return null;
+//        return null;
 //      List<Map<String,Object>> roleList = new ArrayList<>();
 //      List<MisUserRole> misUserRoleList = misUserRoleDao.findByUserId(userId);
 //      for (MisUserRole misUserRole : misUserRoleList) {
@@ -99,7 +100,13 @@ public class CustomUserEntityManager extends UserEntityManager {
 //          }
 //          roleList.add(roleMap);
 //      }
-//      return roleList;
+//
+        List<Map<String,Object>> roleList = new ArrayList<>();
+        Map<String, Object> roleMap = new HashMap<>();
+        roleMap.put("roleCode", "role_code");
+        roleMap.put("roleName", "角色名称");
+        roleList.add(roleMap);
+        return roleList;
     }
 
 }
