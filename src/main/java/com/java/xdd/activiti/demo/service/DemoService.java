@@ -52,12 +52,14 @@ public class DemoService {
     public void demo() throws Exception{
         //流程图
         String path = "E:\\yidong\\xdd-activiti\\src\\main\\resources\\demo3.bpmn";
+        String png = "E:\\yidong\\xdd-activiti\\src\\main\\resources\\demo3.png";
 
         InputStream inputStream = new FileInputStream(path);
 
         //流程部署
         Deployment deploy = repositoryService.createDeployment().name("审批流程")
-                .addClasspathResource("demo3.bpmn").deploy();
+                .addClasspathResource("demo3.bpmn")
+                .addClasspathResource("demo3.png").deploy();
         logger.info(deploy.getId());
         logger.info("Number of process definitions: " + repositoryService.createProcessDefinitionQuery().count());
     }
@@ -72,6 +74,11 @@ public class DemoService {
                 logger.info("部署对象ID：{}", definition.getId());
             }
         }
+        ProcessDefinition definition = list.get(1);
+        String diagramResourceName = definition.getDiagramResourceName();
+        InputStream imageStream = repositoryService.getResourceAsStream(
+                definition.getDeploymentId(), diagramResourceName);
+        System.out.println(imageStream);
     }
 
     //TODO
@@ -79,6 +86,13 @@ public class DemoService {
 //        String s = "vacationRequest:1:15003";//流程定义id（act_re_procdef表id）
 //        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId("20001").singleResult();
 //        ProcessDefinitionEntity processDefinition = (ProcessDefinitionEntity) repositoryService.createProcessDefinitionQuery().processDefinitionId(s).singleResult();
+//
+//        BpmnModel bm = repositoryService.getBpmnModel(processDefinition.getId());
+//        List<ActivityImpl> activities = processDefinition.getActivities();
+//        for (ActivityImpl activity : activities) {
+//            logger.info("x=" + activity.getX() + ";y=" + activity.getY());
+//        }
+
 //        BpmnModel bpmnModel = repositoryService.getBpmnModel(s);
 //        List<String> activeActivityIds = runtimeService.getActiveActivityIds("20001");
 //        List<String> highLightedFlows = getHighLightedFlows(processDefinition, processInstance.getId());
@@ -94,30 +108,49 @@ public class DemoService {
 //            response.getOutputStream().write(b, 0, len);
 //        }
 
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
-                .processInstanceId("20001").singleResult();
-        String processDefinitionId = processInstance.getProcessDefinitionId();
+//        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
+//                .processInstanceId("20001").singleResult();
+//        String processDefinitionId = processInstance.getProcessDefinitionId();
+//
+//        //使用宋体
+//        String fontName = "宋体";
+//        //获取BPMN模型对象
+//        BpmnModel model = repositoryService.getBpmnModel(processDefinitionId);
+//        //获取流程实例当前的节点，需要高亮显示
+//        List<String> currentActs = Collections.EMPTY_LIST;
+//        if (processInstance != null)
+//            currentActs = runtimeService.getActiveActivityIds(processInstance.getId());
+//
+//        InputStream imageStream = processEngineConfiguration
+//                .getProcessDiagramGenerator()
+//                .generateDiagram(model, "png", currentActs, new ArrayList<String>(),
+//                        fontName, fontName, fontName, null, 1.0);
+//
+//        // 输出资源内容到相应对象
+//        byte[] b = new byte[1024];
+//        int len;
+//        while ((len = imageStream.read(b, 0, 1024)) != -1) {
+//            response.getOutputStream().write(b, 0, len);
+//        }
 
-        //使用宋体
-        String fontName = "宋体";
-        //获取BPMN模型对象
-        BpmnModel model = repositoryService.getBpmnModel(processDefinitionId);
-        //获取流程实例当前的节点，需要高亮显示
-        List<String> currentActs = Collections.EMPTY_LIST;
-        if (processInstance != null)
-            currentActs = runtimeService.getActiveActivityIds(processInstance.getId());
-
-        InputStream imageStream = processEngineConfiguration
-                .getProcessDiagramGenerator()
-                .generateDiagram(model, "png", currentActs, new ArrayList<String>(),
-                        fontName, fontName, fontName, null, 1.0);
-
+        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery().list();
+        if(list != null && list.size()>0){
+            for (ProcessDefinition definition : list) {
+                logger.info("流程定义名称：{}", definition.getName());
+                logger.info("部署对象ID：{}", definition.getId());
+            }
+        }
+        ProcessDefinition definition = list.get(1);
+        String diagramResourceName = definition.getDiagramResourceName();
+        InputStream imageStream = repositoryService.getResourceAsStream(
+                definition.getDeploymentId(), diagramResourceName);
         // 输出资源内容到相应对象
         byte[] b = new byte[1024];
         int len;
         while ((len = imageStream.read(b, 0, 1024)) != -1) {
             response.getOutputStream().write(b, 0, len);
         }
+
     }
 
     //启动流程实例
@@ -126,7 +159,7 @@ public class DemoService {
         params.put("employeeName", "admin");
         params.put("numberOfDays", "3");
         params.put("vacationMotivation", "原因是：。。。。");
-        ProcessInstance myProcess_1 = runtimeService.startProcessInstanceById("vacationRequest:1:15003", params);
+        ProcessInstance myProcess_1 = runtimeService.startProcessInstanceById("vacationRequest:2:25004", params);
 
         logger.info("部署DeploymentId：{}", myProcess_1.getDeploymentId());
         logger.info("部署name：{}", myProcess_1.getName());
@@ -135,7 +168,7 @@ public class DemoService {
 
     // 获取流程历史中已执行节点，并按照节点在流程中执行先后顺序排序
     public void getHistoryTask() {
-        String s = "vacationRequest:1:15003";//流程定义id（act_re_procdef表id）
+        String s = "vacationRequest:2:25004";//流程定义id（act_re_procdef表id）
         List<HistoricActivityInstance> list = historyService.createHistoricActivityInstanceQuery().processDefinitionId(s)
                 .orderByHistoricActivityInstanceId().asc().list();
         int index = 1;
