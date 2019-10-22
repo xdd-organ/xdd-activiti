@@ -31,6 +31,18 @@ public class TaskController {
         return "success";
     }
 
+    @RequestMapping("queryFinishedTask")
+    public String queryFinishedTask() {
+        taskService.queryFinishedTask();
+        return "success";
+    }
+
+    @RequestMapping("queryFinishedTask2")
+    public String queryFinishedTask2() {
+        taskService.queryFinishedTask2();
+        return "success";
+    }
+
     @RequestMapping("queryActiveActivity")
     public String queryActiveActivity(HttpServletResponse response) throws Exception{
         taskService.queryActiveActivity(response);

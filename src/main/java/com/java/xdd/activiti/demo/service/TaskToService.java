@@ -2,9 +2,14 @@ package com.java.xdd.activiti.demo.service;
 
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.GraphicInfo;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricProcessInstanceQuery;
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.history.HistoricTaskInstanceQuery;
 import org.activiti.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +38,8 @@ public class TaskToService {
     private RuntimeService runtimeService;
     @Autowired
     private RepositoryService repositoryService;
+    @Autowired
+    private HistoryService historyService;
 
     public void queryTask() {
         //根据指定用户查询
@@ -47,6 +54,31 @@ public class TaskToService {
         List<Task> tasks = taskService.createTaskQuery().taskAssignee("kermit").list();
         Task task = tasks.get(0);
         taskService.complete(task.getId());
+    }
+
+    public void queryFinishedTask() {
+        HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
+        /** 根据历史流程实例ID查询历史任务实例 */
+        List<HistoricTaskInstance> htiLists = taskInstanceQuery
+                .processDefinitionId("process:1:40004")
+//                .processInstanceId("42501")
+                .finished()
+                .orderByTaskCreateTime().asc().list();
+        for (HistoricTaskInstance htiList : htiLists) {
+            logger.info("完成的实例id：{}，完成时间：{}", htiList.getId(), htiList.getEndTime());
+        }
+    }
+
+    public void queryFinishedTask2() {
+        HistoricProcessInstanceQuery taskInstanceQuery = historyService.createHistoricProcessInstanceQuery();
+        /** 根据历史流程实例ID查询历史任务实例 */
+        List<HistoricProcessInstance> htiLists = taskInstanceQuery
+                .processDefinitionId("process:1:40004")
+                .finished()
+                .orderByProcessInstanceId().asc().list();
+        for (HistoricProcessInstance htiList : htiLists) {
+            logger.info("完成的实例id：{}，完成时间：{}", htiList.getId(), htiList.getEndTime());
+        }
     }
 
     //获取当前流程实例所有的活动的节点，并在活动节点标识
