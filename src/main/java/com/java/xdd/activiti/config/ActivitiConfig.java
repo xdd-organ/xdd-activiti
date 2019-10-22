@@ -40,6 +40,7 @@ public class ActivitiConfig {
         engineConfiguration.setProcessDefinitionCacheLimit(10);
         engineConfiguration.setActivityFontName("宋体");//生成流程图的字体
         engineConfiguration.setLabelFontName("宋体");//生成流程图的字体
+        engineConfiguration.setCreateDiagramOnDeploy(true);//在部署时生成流程图
 
         engineConfiguration.setDataSource(dataSource());
         engineConfiguration.setTransactionManager(transactionManager());
