@@ -2,14 +2,11 @@ package com.java.xdd.activiti.demo.service;
 
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.GraphicInfo;
-import org.activiti.engine.HistoryService;
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
-import org.activiti.engine.TaskService;
-import org.activiti.engine.history.HistoricProcessInstance;
-import org.activiti.engine.history.HistoricProcessInstanceQuery;
-import org.activiti.engine.history.HistoricTaskInstance;
-import org.activiti.engine.history.HistoricTaskInstanceQuery;
+import org.activiti.engine.*;
+import org.activiti.engine.history.*;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.PvmTransition;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,6 +38,8 @@ public class TaskToService {
     private RepositoryService repositoryService;
     @Autowired
     private HistoryService historyService;
+    @Autowired
+    private ProcessEngineConfiguration processEngineConfiguration;
 
     public void queryTask() {
         //根据指定用户查询
@@ -114,5 +114,60 @@ public class TaskToService {
         response.setContentType("image/png");
         /** 向浏览器输出图片 */
         ImageIO.write(iamge, "png", response.getOutputStream());
+    }
+
+    public void getBpmnImg(HttpServletResponse response) throws Exception {
+        //当前正在执行任务
+        List<String> currentActs = runtimeService.getActiveActivityIds("50001");//act_hi_procinst表id
+
+        //历史完成的任务
+        List<HistoricActivityInstance> finishedInstances = historyService.createHistoricActivityInstanceQuery().processInstanceId("50001").finished().list();
+        for (HistoricActivityInstance hai : finishedInstances) {
+            currentActs.add(hai.getActivityId());
+        }
+
+        //已执行过的箭头
+        ProcessDefinitionEntity processDefinitionEntity = (ProcessDefinitionEntity) repositoryService.getProcessDefinition("process:1:40004");
+        List<String> highLightedFlows = new ArrayList<>();
+        getHighLightedFlows(processDefinitionEntity.getActivities(), highLightedFlows, currentActs);
+
+        logger.info("所有的活动的节点:{}", currentActs);
+
+        //获取BPMN模型对象
+        BpmnModel model = repositoryService.getBpmnModel("process:1:40004");//act_re_procdef表id
+
+        //使用宋体
+        String fontName = "宋体";
+
+        InputStream imageStream = processEngineConfiguration
+                .getProcessDiagramGenerator()
+                .generateDiagram(model, "png", currentActs, highLightedFlows,
+                        fontName, fontName, fontName, null, 1.0);
+
+
+        // 输出资源内容到相应对象
+        BufferedImage iamge = ImageIO.read(imageStream);
+
+        response.setContentType("image/png");
+        ImageIO.write(iamge, "png", response.getOutputStream());
+    }
+
+    private void getHighLightedFlows(List<ActivityImpl> activityList, List<String> highLightedFlows, List<String> historicActivityInstanceList) {
+        for (ActivityImpl activity : activityList) {
+            if (activity.getProperty("type").equals("subProcess")) {
+                // get flows for the subProcess
+                getHighLightedFlows(activity.getActivities(), highLightedFlows, historicActivityInstanceList);
+            }
+
+            if (historicActivityInstanceList.contains(activity.getId())) {
+                List<PvmTransition> pvmTransitionList = activity.getOutgoingTransitions();
+                for (PvmTransition pvmTransition : pvmTransitionList) {
+                    String destinationFlowId = pvmTransition.getDestination().getId();
+                    if (historicActivityInstanceList.contains(destinationFlowId)) {
+                        highLightedFlows.add(pvmTransition.getId());
+                    }
+                }
+            }
+        }
     }
 }

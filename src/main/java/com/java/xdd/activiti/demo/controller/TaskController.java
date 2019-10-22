@@ -48,4 +48,10 @@ public class TaskController {
         taskService.queryActiveActivity(response);
         return "success";
     }
+
+    @RequestMapping("getBpmnImg")
+    public String getBpmnImg(HttpServletResponse response) throws Exception{
+        taskService.getBpmnImg(response);
+        return "success";
+    }
 }
