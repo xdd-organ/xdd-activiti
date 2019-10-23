@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
+  <process id="process_01" name="process_01" isExecutable="true">
+    <startEvent id="start" name="start"></startEvent>
+    <userTask id="task_01" name="task_01" activiti:assignee="${usereId}"></userTask>
+    <sequenceFlow id="sid-6656DE5D-97C0-4AFB-AFFD-EA5A25265CFC" sourceRef="start" targetRef="task_01"></sequenceFlow>
+    <userTask id="task_02" name="task_02">
+      <extensionElements>
+        <activiti:taskListener event="create" delegateExpression="${cusTaskListener}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="pass_01" name="pass_01"></exclusiveGateway>
+    <userTask id="task_03" name="task_03" activiti:assignee="${userId}"></userTask>
+    <exclusiveGateway id="pass_02" name="pass_02"></exclusiveGateway>
+    <sequenceFlow id="sid-FE572E93-8329-4D84-976E-6EEC012206C7" sourceRef="task_01" targetRef="task_02"></sequenceFlow>
+    <sequenceFlow id="sid-A92BF6D4-E30D-471C-909C-19B23313CB6E" sourceRef="task_02" targetRef="pass_01"></sequenceFlow>
+    <sequenceFlow id="sid-0DBD251B-A4CC-4724-96D9-127CE02D9AF9" sourceRef="task_03" targetRef="pass_02"></sequenceFlow>
+    <userTask id="task_04" name="task_04" activiti:assignee="${userId}"></userTask>
+    <exclusiveGateway id="pass_03" name="pass_03"></exclusiveGateway>
+    <sequenceFlow id="sid-5CF72707-74AE-4D9E-8A96-B340C0E5A1FC" sourceRef="task_04" targetRef="pass_03"></sequenceFlow>
+    <userTask id="task_05" name="task_05" activiti:assignee="${userId}"></userTask>
+    <endEvent id="end" name="end"></endEvent>
+    <sequenceFlow id="sid-10A49359-4215-4513-89B8-5C86167395CC" sourceRef="task_05" targetRef="end"></sequenceFlow>
+    <sequenceFlow id="return_04" name="return_04" sourceRef="pass_03" targetRef="task_05">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pass_03=='true'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="return_03" name="return_03" sourceRef="pass_03" targetRef="task_02">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pass_03=='false'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="return_02" name="return_02" sourceRef="pass_02" targetRef="task_02">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pass_02=='true'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-E944D783-4CF4-47AD-952B-D1C22AB08985" sourceRef="pass_02" targetRef="end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pass_02=='false'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="return_01" name="return_01" sourceRef="pass_01" targetRef="task_03">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pass_01=='false'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-68AF7E6F-F0D4-4C4D-8FD3-26663178DAB1" sourceRef="pass_01" targetRef="task_04">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pass_01=='false'}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_process_01">
+    <bpmndi:BPMNPlane bpmnElement="process_01" id="BPMNPlane_process_01">
+      <bpmndi:BPMNShape bpmnElement="start" id="BPMNShape_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="86.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="task_01" id="BPMNShape_task_01">
+        <omgdc:Bounds height="80.0" width="100.0" x="191.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="task_02" id="BPMNShape_task_02">
+        <omgdc:Bounds height="80.0" width="100.0" x="358.5" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="pass_01" id="BPMNShape_pass_01">
+        <omgdc:Bounds height="40.0" width="40.0" x="553.5" y="158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="task_03" id="BPMNShape_task_03">
+        <omgdc:Bounds height="80.0" width="100.0" x="523.5" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="pass_02" id="BPMNShape_pass_02">
+        <omgdc:Bounds height="40.0" width="40.0" x="553.5" y="425.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="task_04" id="BPMNShape_task_04">
+        <omgdc:Bounds height="80.0" width="100.0" x="673.5" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="pass_03" id="BPMNShape_pass_03">
+        <omgdc:Bounds height="40.0" width="40.0" x="853.5" y="158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="task_05" id="BPMNShape_task_05">
+        <omgdc:Bounds height="80.0" width="100.0" x="956.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end" id="BPMNShape_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="1110.0" y="164.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-5CF72707-74AE-4D9E-8A96-B340C0E5A1FC" id="BPMNEdge_sid-5CF72707-74AE-4D9E-8A96-B340C0E5A1FC">
+        <omgdi:waypoint x="773.5" y="178.16611295681062"></omgdi:waypoint>
+        <omgdi:waypoint x="853.9333333333333" y="178.43333333333334"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="return_04" id="BPMNEdge_return_04">
+        <omgdi:waypoint x="893.0722433460076" y="178.4277566539924"></omgdi:waypoint>
+        <omgdi:waypoint x="956.0" y="178.18939393939394"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6656DE5D-97C0-4AFB-AFFD-EA5A25265CFC" id="BPMNEdge_sid-6656DE5D-97C0-4AFB-AFFD-EA5A25265CFC">
+        <omgdi:waypoint x="116.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="191.0" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="return_03" id="BPMNEdge_return_03">
+        <omgdi:waypoint x="874.0" y="158.5"></omgdi:waypoint>
+        <omgdi:waypoint x="874.0" y="45.0"></omgdi:waypoint>
+        <omgdi:waypoint x="408.5" y="45.0"></omgdi:waypoint>
+        <omgdi:waypoint x="408.5" y="138.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="return_02" id="BPMNEdge_return_02">
+        <omgdi:waypoint x="554.0" y="445.5"></omgdi:waypoint>
+        <omgdi:waypoint x="408.5" y="445.5"></omgdi:waypoint>
+        <omgdi:waypoint x="408.5" y="218.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="return_01" id="BPMNEdge_return_01">
+        <omgdi:waypoint x="573.9370860927153" y="197.56291390728478"></omgdi:waypoint>
+        <omgdi:waypoint x="573.6320132013201" y="290.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-0DBD251B-A4CC-4724-96D9-127CE02D9AF9" id="BPMNEdge_sid-0DBD251B-A4CC-4724-96D9-127CE02D9AF9">
+        <omgdi:waypoint x="573.6731601731602" y="370.0"></omgdi:waypoint>
+        <omgdi:waypoint x="573.9130434782609" y="425.4130434782609"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-68AF7E6F-F0D4-4C4D-8FD3-26663178DAB1" id="BPMNEdge_sid-68AF7E6F-F0D4-4C4D-8FD3-26663178DAB1">
+        <omgdi:waypoint x="593.0637583892617" y="178.43624161073825"></omgdi:waypoint>
+        <omgdi:waypoint x="673.5" y="178.16722408026754"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FE572E93-8329-4D84-976E-6EEC012206C7" id="BPMNEdge_sid-FE572E93-8329-4D84-976E-6EEC012206C7">
+        <omgdi:waypoint x="291.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="358.5" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-E944D783-4CF4-47AD-952B-D1C22AB08985" id="BPMNEdge_sid-E944D783-4CF4-47AD-952B-D1C22AB08985">
+        <omgdi:waypoint x="593.0" y="445.5"></omgdi:waypoint>
+        <omgdi:waypoint x="1120.5" y="445.5"></omgdi:waypoint>
+        <omgdi:waypoint x="1123.8168381073433" y="191.99880179590662"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A92BF6D4-E30D-471C-909C-19B23313CB6E" id="BPMNEdge_sid-A92BF6D4-E30D-471C-909C-19B23313CB6E">
+        <omgdi:waypoint x="458.5" y="178.1510574018127"></omgdi:waypoint>
+        <omgdi:waypoint x="553.939393939394" y="178.43939393939394"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-10A49359-4215-4513-89B8-5C86167395CC" id="BPMNEdge_sid-10A49359-4215-4513-89B8-5C86167395CC">
+        <omgdi:waypoint x="1056.0" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1110.0" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
